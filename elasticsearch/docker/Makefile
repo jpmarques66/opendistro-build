@@ -15,7 +15,7 @@
 # Makefile for building & testing elasticsearch docker image.
 
 SHELL=/bin/bash
-OPENDISTRO_REPOSITORY ?= amazon/opendistro-for-elasticsearch
+OPENDISTRO_REPOSITORY ?= joaopmarques66/opendistro-for-elasticsearch
 export PATH := ./bin:./venv/bin:$(PATH)
 
 # Determine the version to build. Override by setting ELASTIC_VERSION env var.

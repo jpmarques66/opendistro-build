@@ -103,10 +103,12 @@ RUN set -ex; \
 # Bust cache for wgets
 ENV BUST_CACHE {{ bust_cache }}
 
+
+
 # Install the required modules
 #RUN for plugin_path in {{ plugin_url_paths }}; do \
 RUN for plugin_path in `cat /tmp/plugins/plugins.list`; do \
-      elasticsearch-plugin install --batch file:/tmp/plugins/$plugin_path; \
+      elasticsearch-plugin install --batch $plugin_path; \
     done
 
 # Pull performance analyzer agent(RCA) from the plugin directory out into ESHOME and make the agent executable.
@@ -114,11 +116,10 @@ RUN if [ -d plugins/opendistro_performance_analyzer/performance-analyzer-rca ]; 
      mv plugins/opendistro_performance_analyzer/performance-analyzer-rca ./ && \
      chmod 755 performance-analyzer-rca/pa_bin/performance-analyzer-agent; fi
 # Make the certificate installer script executable. This script has to be executed before ES is started.
-RUN security=`ls /tmp/plugins/|grep opendistro_security|wc -l` && \
-    if [ $security -gt 0 ]; then chmod +x /usr/share/elasticsearch/plugins/opendistro_security/tools/install_demo_configuration.sh; \
-    else echo "Security plugin is not yet installed"; fi
+RUN chmod +x /usr/share/elasticsearch/plugins/opendistro_security/tools/install_demo_configuration.sh;
 
 COPY --chown=1000:0 elasticsearch.yml log4j2.properties config/
+
 
 USER 0
 
@@ -126,9 +127,7 @@ USER 0
 RUN chown -R elasticsearch:0 . && \
     chmod -R g=u /usr/share/elasticsearch
 
-RUN pfa=`ls /tmp/plugins/|grep opendistro_performance_analyzer|wc -l` && \ 
-    if [ $pfa -gt 0 ]; then chmod 755 /usr/share/elasticsearch/plugins/opendistro_performance_analyzer/pa_bin/performance-analyzer-agent; \
-    else echo "Performace Analyzer plugin is not yet installed"; fi
+RUN chmod 755 /usr/share/elasticsearch/plugins/opendistro_performance_analyzer/pa_bin/performance-analyzer-agent;
 
 RUN chmod -R 755 /dev/shm
 ################################################################################
